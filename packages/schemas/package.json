@@ -4,6 +4,10 @@
   "private": true,
   "sideEffects": false,
   "exports": {
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./dist/auth.js"
+    },
     "./newsletter": {
       "types": "./src/newsletter.ts",
       "default": "./dist/newsletter.js"

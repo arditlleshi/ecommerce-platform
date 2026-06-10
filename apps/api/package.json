@@ -29,8 +29,10 @@
     "@nestjs/core": "11.1.26",
     "@nestjs/platform-express": "11.1.26",
     "@repo/schemas": "workspace:*",
+    "better-auth": "^1.6.16",
     "dotenv": "17.4.2",
     "drizzle-orm": "0.45.2",
+    "express": "^5.2.1",
     "pg": "8.21.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
@@ -73,6 +75,9 @@
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^@repo/schemas/(.*)$": "<rootDir>/../../packages/schemas/src/$1.ts"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

@@ -10,6 +10,7 @@ import {
   type NewsletterSignupListResponse,
   type NewsletterSignupResponse,
 } from "@repo/schemas/newsletter";
+import { getApiUrl } from "../api";
 
 function toQueryString(query: NewsletterSignupListQuery): string {
   const searchParams = new URLSearchParams({
@@ -18,16 +19,6 @@ function toQueryString(query: NewsletterSignupListQuery): string {
   });
 
   return searchParams.toString();
-}
-
-function getApiUrl(path: string): URL {
-  const baseUrl = process.env.API_URL?.trim() || "http://localhost:4001";
-
-  try {
-    return new URL(path, `${baseUrl}/`);
-  } catch {
-    throw new Error(`Invalid API_URL value: ${baseUrl}`);
-  }
 }
 
 async function parseJson(response: Response): Promise<unknown> {

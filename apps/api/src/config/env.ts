@@ -9,6 +9,7 @@ const envSchema = z.object({
     .default('development'),
   PORT: z.coerce.number().int().positive().default(4001),
   WEB_ORIGIN: z.string().default('http://localhost:3000,http://127.0.0.1:3000'),
+  FRONTEND_APP_URL: z.string().url().default('http://localhost:3000'),
   DATABASE_URL: z
     .string()
     .min(1, 'DATABASE_URL is required')
@@ -25,6 +26,24 @@ const envSchema = z.object({
     .default('false')
     .transform((value) => value === 'true'),
   DATABASE_POOL_MAX: z.coerce.number().int().positive().default(10),
+  BETTER_AUTH_URL: z.string().url().default('http://localhost:4001'),
+  BETTER_AUTH_SECRET: z
+    .string()
+    .min(32, 'BETTER_AUTH_SECRET must be at least 32 characters long'),
+  AUTH_COOKIE_DOMAIN: z.preprocess(
+    (value) =>
+      typeof value === 'string' && value.trim() === '' ? undefined : value,
+    z
+      .string()
+      .trim()
+      .regex(
+        /^\.?[a-zA-Z0-9.-]+$/,
+        'AUTH_COOKIE_DOMAIN must be a hostname such as example.com or .example.com',
+      )
+      .optional(),
+  ),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
 });
 
 const envFiles = [
@@ -52,6 +71,23 @@ if (!parsedEnv.success) {
 }
 
 export const env = parsedEnv.data;
+
+const googleClientId = env.GOOGLE_CLIENT_ID?.trim();
+const googleClientSecret = env.GOOGLE_CLIENT_SECRET?.trim();
+
+if (Boolean(googleClientId) !== Boolean(googleClientSecret)) {
+  throw new Error(
+    'Google OAuth configuration is incomplete. Set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or leave both unset.',
+  );
+}
+
+export const googleAuthConfig =
+  googleClientId && googleClientSecret
+    ? {
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
+      }
+    : null;
 
 export const allowedWebOrigins = env.WEB_ORIGIN.split(',')
   .map((origin) => origin.trim())

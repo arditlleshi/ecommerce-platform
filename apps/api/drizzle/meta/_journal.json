@@ -8,6 +8,13 @@
       "when": 1781017565952,
       "tag": "0000_nifty_swarm",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781103656141,
+      "tag": "0001_typical_calypso",
+      "breakpoints": true
     }
   ]
 }

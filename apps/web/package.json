@@ -11,10 +11,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@repo/schemas": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@hugeicons/core-free-icons": "^4.2.0",
     "@hugeicons/react": "^1.1.6",
+    "@repo/schemas": "workspace:*",
+    "@repo/ui": "workspace:*",
     "next": "16.2.7",
     "react": "19.2.7",
     "react-dom": "19.2.7",

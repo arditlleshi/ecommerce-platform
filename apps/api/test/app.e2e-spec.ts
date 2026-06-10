@@ -6,6 +6,8 @@ import {
 } from '@repo/schemas/newsletter';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { BETTER_AUTH } from './../src/auth/auth.constants';
+import { AuthService } from './../src/auth/auth.service';
 import { DATABASE, DATABASE_POOL } from './../src/database/database.constants';
 import { DatabaseService } from './../src/database/database.service';
 import { NewsletterSignupsRepository } from './../src/newsletter/newsletter-signups.repository';
@@ -19,6 +21,17 @@ describe('AppController (e2e)', () => {
   const newsletterSignupsRepository = {
     findMany: jest.fn(),
     upsert: jest.fn(),
+  };
+  const authService = {
+    getSession: jest.fn(),
+    handleAuthRequest: jest.fn(),
+    isGoogleSignInEnabled: jest.fn(),
+  };
+  const betterAuth = {
+    api: {
+      getSession: jest.fn(),
+    },
+    handler: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -36,12 +49,20 @@ describe('AppController (e2e)', () => {
       .useValue(databaseService)
       .overrideProvider(NewsletterSignupsRepository)
       .useValue(newsletterSignupsRepository)
+      .overrideProvider(BETTER_AUTH)
+      .useValue(betterAuth)
+      .overrideProvider(AuthService)
+      .useValue(authService)
       .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
     databaseService.ping.mockReset();
     databaseService.ping.mockResolvedValue(undefined);
+    authService.getSession.mockReset();
+    authService.handleAuthRequest.mockReset();
+    authService.isGoogleSignInEnabled.mockReset();
+    authService.isGoogleSignInEnabled.mockReturnValue(true);
     newsletterSignupsRepository.findMany.mockReset();
     newsletterSignupsRepository.upsert.mockReset();
   });
@@ -173,7 +194,77 @@ describe('AppController (e2e)', () => {
       });
   });
 
+  it('/auth/status (GET) returns provider availability without exposing secrets', () => {
+    authService.isGoogleSignInEnabled.mockReturnValue(true);
+
+    return request(app.getHttpServer())
+      .get('/auth/status')
+      .expect(200)
+      .expect({
+        success: true,
+        data: {
+          providers: {
+            google: {
+              enabled: true,
+            },
+          },
+        },
+      });
+  });
+
+  it('/me (GET) returns 401 without a session', () => {
+    authService.getSession.mockResolvedValue(null);
+
+    return request(app.getHttpServer()).get('/me').expect(401).expect({
+      message: 'Authentication required.',
+      error: 'Unauthorized',
+      statusCode: 401,
+    });
+  });
+
+  it('/me (GET) returns the signed-in user', () => {
+    authService.getSession.mockResolvedValue({
+      user: {
+        id: 'user_123',
+        name: 'Ardit',
+        email: 'ardit@example.com',
+        image: null,
+        emailVerified: true,
+        createdAt: new Date('2026-06-10T09:00:00.000Z'),
+        updatedAt: new Date('2026-06-10T09:05:00.000Z'),
+      },
+      session: {
+        id: 'session_123',
+        expiresAt: new Date('2026-06-17T09:00:00.000Z'),
+      },
+    });
+
+    return request(app.getHttpServer())
+      .get('/me')
+      .expect(200)
+      .expect({
+        success: true,
+        data: {
+          user: {
+            id: 'user_123',
+            name: 'Ardit',
+            email: 'ardit@example.com',
+            image: null,
+            emailVerified: true,
+            createdAt: '2026-06-10T09:00:00.000Z',
+            updatedAt: '2026-06-10T09:05:00.000Z',
+          },
+          session: {
+            id: 'session_123',
+            expiresAt: '2026-06-17T09:00:00.000Z',
+          },
+        },
+      });
+  });
+
   afterEach(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 });
