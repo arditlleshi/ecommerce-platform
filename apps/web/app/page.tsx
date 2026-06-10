@@ -1,15 +1,25 @@
-import Image from "next/image";
-import { Button } from "@repo/ui/button";
+import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
+import {
+  RecentNewsletterSignups,
+  RecentNewsletterSignupsLoading,
+} from "@/components/recent-newsletter-signups";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@repo/ui/card";
 import { Code } from "@repo/ui/code";
-import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
+import type { Metadata } from "next";
+import Image from "next/image";
+import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Storefront Newsletter Boundary",
+  description:
+    "A Next.js server-first storefront flow that reads and writes newsletter data through the Nest backend.",
+};
 
 export default function Home() {
   return (
@@ -26,32 +36,33 @@ export default function Home() {
           />
           <div className="space-y-3">
             <CardTitle className="text-3xl sm:text-4xl">
-              Shared UI is now packaged for Turbopack.
+              The storefront now talks to the backend through a server-first
+              boundary.
             </CardTitle>
             <CardDescription className="max-w-2xl text-base leading-7">
               The storefront consumes reusable components from <Code>@repo/ui</Code>,
-              while the app router stays server-first and ready for a future admin
-              frontend.
+              while the app router keeps reads on the server and mutations inside
+              typed server actions.
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
           <div className="rounded-xl border border-border/70 bg-background p-5">
             <h2 className="text-sm font-semibold tracking-wide text-foreground">
-              Monorepo boundary
+              Frontend ownership
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Shared primitives live in <Code>packages/ui</Code>. App-specific page
-              composition stays in <Code>apps/web</Code>.
+              composition and backend orchestration stay in <Code>apps/web</Code>.
             </p>
           </div>
           <div className="rounded-xl border border-border/70 bg-background p-5">
             <h2 className="text-sm font-semibold tracking-wide text-foreground">
-              Turbopack posture
+              Request boundary
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Next.js transpiles the shared package explicitly, and the UI package is
-              marked side-effect free for cleaner tree shaking.
+              Client components no longer construct backend URLs. Next.js owns the
+              transport layer and calls Nest from the server.
             </p>
           </div>
         </CardContent>
@@ -59,37 +70,22 @@ export default function Home() {
           <div className="grid gap-4 lg:grid-cols-[1fr_1.3fr]">
             <div className="space-y-3">
               <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                Shared Zod validation
+                Typed signup flow
               </h2>
               <p className="text-sm leading-6 text-muted-foreground">
-                The same schema validates this form in the browser and the signup
-                payload in the Nest API. That keeps storefront and future admin flows
-                aligned without duplicating rules.
+                The same schema validates this form in the browser, in the Next
+                server action, and in the Nest API. The UI keeps instant feedback
+                without owning the backend request.
               </p>
             </div>
             <NewsletterSignupForm />
           </div>
         </CardContent>
-        <CardFooter className="flex-col items-stretch gap-3 border-t border-border/60 pt-6 sm:flex-row sm:items-center">
-          <Button asChild className="sm:w-auto">
-            <a
-              href="https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Review transpilePackages
-            </a>
-          </Button>
-          <Button asChild variant="outline" className="sm:w-auto">
-            <a
-              href="https://nextjs.org/docs/architecture/turbopack"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Turbopack docs
-            </a>
-          </Button>
-        </CardFooter>
+        <CardContent className="border-t border-border/60 pt-6">
+          <Suspense fallback={<RecentNewsletterSignupsLoading />}>
+            <RecentNewsletterSignups />
+          </Suspense>
+        </CardContent>
       </Card>
     </main>
   );

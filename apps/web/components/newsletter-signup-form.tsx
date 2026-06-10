@@ -1,93 +1,39 @@
 "use client";
 
-import { useState } from "react";
 import {
-  newsletterSignupResponseSchema,
-  newsletterSignupSchema,
-  type NewsletterSignupInput,
-} from "@repo/schemas/newsletter";
+  useActionState,
+  useEffect,
+  useRef,
+} from "react";
 import { Button } from "@repo/ui/button";
-
-type FieldErrors = Partial<
-  Record<keyof NewsletterSignupInput, string[] | undefined>
->;
-
-const initialValues: NewsletterSignupInput = {
-  name: "",
-  email: "",
-  interest: "storefront",
-};
+import {
+  submitNewsletterSignup,
+} from "@/app/actions/newsletter";
+import {
+  initialNewsletterSignupActionState,
+  type NewsletterSignupActionState,
+} from "@/app/actions/newsletter-state";
 
 export function NewsletterSignupForm() {
-  const [values, setValues] = useState<NewsletterSignupInput>(initialValues);
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [status, setStatus] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [actionState, formAction, isPending] = useActionState(
+    submitNewsletterSignup,
+    initialNewsletterSignupActionState,
+  );
+  const currentActionState: NewsletterSignupActionState = {
+    ...initialNewsletterSignupActionState,
+    ...actionState,
+    fieldErrors: actionState?.fieldErrors ?? {},
+  };
 
-  function updateValue<K extends keyof NewsletterSignupInput>(
-    key: K,
-    value: NewsletterSignupInput[K],
-  ) {
-    setValues((current) => ({ ...current, [key]: value }));
-  }
-
-  async function submitSignup() {
-    setStatus(null);
-
-    const parsed = newsletterSignupSchema.safeParse(values);
-    if (!parsed.success) {
-      setErrors(parsed.error.flatten().fieldErrors);
-      return;
+  useEffect(() => {
+    if (currentActionState.status === "success") {
+      formRef.current?.reset();
     }
-
-    setErrors({});
-    setIsSubmitting(true);
-
-    try {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL ??
-        `${window.location.protocol}//${window.location.hostname}:4001`;
-
-      const response = await fetch(`${apiUrl}/newsletter-signups`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(parsed.data),
-      });
-
-      const body = await response.json();
-
-      if (!response.ok) {
-        setErrors((body?.errors as FieldErrors | undefined) ?? {});
-        setStatus(body?.message ?? "The signup request failed.");
-        return;
-      }
-
-      const parsedResponse = newsletterSignupResponseSchema.safeParse(body);
-      if (!parsedResponse.success) {
-        setStatus("The API responded with an unexpected payload.");
-        return;
-      }
-
-      setStatus(parsedResponse.data.message);
-      setValues(initialValues);
-    } catch {
-      setStatus("Could not reach the API. Check that the backend is running.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  }, [currentActionState.status]);
 
   return (
-    <form
-      className="grid gap-4"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void submitSignup();
-      }}
-      noValidate
-    >
+    <form ref={formRef} className="grid gap-4" action={formAction}>
       <div className="grid gap-2">
         <label className="text-sm font-medium text-foreground" htmlFor="name">
           Name
@@ -95,13 +41,17 @@ export function NewsletterSignupForm() {
         <input
           id="name"
           name="name"
-          value={values.name}
-          onChange={(event) => updateValue("name", event.target.value)}
+          autoComplete="name"
           className="h-10 rounded-md border border-border bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
           placeholder="Ardit"
+          minLength={2}
+          maxLength={80}
+          required
         />
-        {errors.name ? (
-          <p className="text-sm text-destructive">{errors.name[0]}</p>
+        {currentActionState.fieldErrors.name?.[0] ? (
+          <p className="text-sm text-destructive">
+            {currentActionState.fieldErrors.name[0]}
+          </p>
         ) : null}
       </div>
 
@@ -113,13 +63,15 @@ export function NewsletterSignupForm() {
           id="email"
           name="email"
           type="email"
-          value={values.email}
-          onChange={(event) => updateValue("email", event.target.value)}
+          autoComplete="email"
           className="h-10 rounded-md border border-border bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
           placeholder="ardit@example.com"
+          required
         />
-        {errors.email ? (
-          <p className="text-sm text-destructive">{errors.email[0]}</p>
+        {currentActionState.fieldErrors.email?.[0] ? (
+          <p className="text-sm text-destructive">
+            {currentActionState.fieldErrors.email[0]}
+          </p>
         ) : null}
       </div>
 
@@ -133,35 +85,36 @@ export function NewsletterSignupForm() {
         <select
           id="interest"
           name="interest"
-          value={values.interest}
-          onChange={(event) =>
-            updateValue(
-              "interest",
-              event.target.value as NewsletterSignupInput["interest"],
-            )
-          }
+          defaultValue="storefront"
           className="h-10 rounded-md border border-border bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
         >
           <option value="storefront">Storefront updates</option>
           <option value="admin">Admin app updates</option>
           <option value="both">Both</option>
         </select>
-        {errors.interest ? (
-          <p className="text-sm text-destructive">{errors.interest[0]}</p>
+        {currentActionState.fieldErrors.interest?.[0] ? (
+          <p className="text-sm text-destructive">
+            {currentActionState.fieldErrors.interest[0]}
+          </p>
         ) : null}
       </div>
 
       <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          disabled={isSubmitting}
-          onClick={() => {
-            void submitSignup();
-          }}
-        >
-          {isSubmitting ? "Submitting..." : "Join the list"}
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Submitting..." : "Join the list"}
         </Button>
-        {status ? <p className="text-sm text-muted-foreground">{status}</p> : null}
+        {currentActionState.message ? (
+          <p
+            aria-live="polite"
+            className={
+              currentActionState.status === "success"
+                ? "text-sm text-foreground"
+                : "text-sm text-muted-foreground"
+            }
+          >
+            {currentActionState.message}
+          </p>
+        ) : null}
       </div>
     </form>
   );
