@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { sql } from 'drizzle-orm';
+import { desc, sql } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { type NewsletterSignupInput } from '@repo/schemas/newsletter';
+import {
+  type NewsletterSignupInput,
+  type NewsletterSignupListQuery,
+} from '@repo/schemas/newsletter';
 import { DATABASE } from '../database/database.constants';
 import * as schema from '../database/schema';
 import {
@@ -35,5 +38,28 @@ export class NewsletterSignupsRepository {
       .returning();
 
     return signup;
+  }
+
+  async findMany(
+    query: NewsletterSignupListQuery,
+  ): Promise<{ rows: NewsletterSignupRow[]; total: number }> {
+    const [rows, totalResult] = await Promise.all([
+      this.db
+        .select()
+        .from(newsletterSignups)
+        .orderBy(desc(newsletterSignups.createdAt), desc(newsletterSignups.id))
+        .limit(query.limit)
+        .offset(query.offset),
+      this.db
+        .select({
+          total: sql<number>`count(*)::int`,
+        })
+        .from(newsletterSignups),
+    ]);
+
+    return {
+      rows,
+      total: totalResult[0]?.total ?? 0,
+    };
   }
 }

@@ -4,6 +4,7 @@ import { allowedWebOrigins, env } from './config/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableShutdownHooks();
   app.enableCors({
     origin: allowedWebOrigins,
   });
