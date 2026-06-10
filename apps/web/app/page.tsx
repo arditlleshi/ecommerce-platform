@@ -16,6 +16,7 @@ import {
 import { Code } from "@repo/ui/code";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -58,6 +59,7 @@ export default async function Home() {
             </CardDescription>
           </div>
         </CardHeader>
+        <Link href="/login">Login</Link>  
         <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
           <div className="rounded-xl border border-border/70 bg-background p-5">
             <h2 className="text-sm font-semibold tracking-wide text-foreground">

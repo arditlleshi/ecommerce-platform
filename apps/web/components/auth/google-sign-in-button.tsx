@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { GoogleIcon } from "@/components/icons/google-icon";
 import { Button } from "@repo/ui/button";
 
 type GoogleSignInButtonProps = {
@@ -57,14 +58,15 @@ export function GoogleSignInButton({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       <Button
         type="button"
         className="w-full"
         onClick={signIn}
         disabled={!enabled || isPending}
       >
-        {isPending ? "Redirecting…" : "Continue with Google"}
+        <GoogleIcon data-icon="inline-start" />
+        {isPending ? "Redirecting..." : "Continue with Google"}
       </Button>
       {!enabled ? (
         <p className="text-sm text-muted-foreground">
@@ -72,7 +74,9 @@ export function GoogleSignInButton({
         </p>
       ) : null}
       {errorMessage ? (
-        <p className="text-sm text-red-600">{errorMessage}</p>
+        <p aria-live="polite" className="text-sm text-destructive">
+          {errorMessage}
+        </p>
       ) : null}
     </div>
   );
