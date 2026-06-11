@@ -1,7 +1,7 @@
 export const siteConfig = {
-  name: "Ecommerce Platform",
+  name: "Northstar Commerce",
   description:
-    "A shadcn-first storefront shell with auth-aware entry, newsletter capture, and account flow.",
+    "A modern ecommerce storefront prototype with category navigation, search, curated products, and service-led merchandising.",
 } as const;
 
 export function getSiteUrl(): URL {
