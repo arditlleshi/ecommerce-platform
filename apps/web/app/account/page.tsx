@@ -1,66 +1,92 @@
-import { SignOutButton } from '@/components/auth/sign-out-button';
-import { getCurrentUser } from '@/lib/server/current-user';
-import { getApiBaseUrl } from '@/lib/server/api';
-import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/card';
-import { redirect } from 'next/navigation';
+import { SignOutButton } from "@/components/auth/sign-out-button";
+import { getApiBaseUrl } from "@/lib/server/api";
+import { getCurrentUser } from "@/lib/server/current-user";
+import { Button } from "@repo/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/card";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
-    redirect('/');
+    redirect("/");
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-6 py-16 dark:bg-black">
-      <Card className="w-full max-w-xl">
-        <CardHeader className="space-y-3 border-b border-border/60">
-          <CardTitle className="text-3xl">Account</CardTitle>
-          <p className="text-sm leading-6 text-muted-foreground">
-            This page is rendered on the server by calling the NestJS `/me`
-            endpoint with the current request cookies.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6 pt-6">
-          <dl className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-border/70 bg-background p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Name
-              </dt>
-              <dd className="mt-2 text-sm font-medium text-foreground">
-                {currentUser.user.name}
-              </dd>
-            </div>
-            <div className="rounded-xl border border-border/70 bg-background p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Email
-              </dt>
-              <dd className="mt-2 text-sm font-medium text-foreground">
-                {currentUser.user.email}
-              </dd>
-            </div>
-            <div className="rounded-xl border border-border/70 bg-background p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Verified
-              </dt>
-              <dd className="mt-2 text-sm font-medium text-foreground">
-                {currentUser.user.emailVerified ? 'Yes' : 'No'}
-              </dd>
-            </div>
-            <div className="rounded-xl border border-border/70 bg-background p-4">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Session expires
-              </dt>
-              <dd className="mt-2 text-sm font-medium text-foreground">
-                {new Date(currentUser.session.expiresAt).toLocaleString()}
-              </dd>
-            </div>
-          </dl>
-          <SignOutButton apiBaseUrl={getApiBaseUrl()} />
-        </CardContent>
-      </Card>
+    <main className="min-h-dvh bg-muted/20">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-8 lg:px-8">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium">Account</p>
+            <p className="text-sm text-muted-foreground">
+              Session details are rendered on the server before the page is
+              returned.
+            </p>
+          </div>
+          <Button asChild variant="outline">
+            <Link href="/">Home</Link>
+          </Button>
+        </header>
+
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle className="text-2xl">Session overview</CardTitle>
+            <CardDescription className="text-sm/6">
+              This view calls the NestJS `/me` endpoint with the current request
+              cookies and renders the result directly in the App Router.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <dl className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-lg bg-muted/50 p-4 ring-1 ring-foreground/10">
+                <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Name
+                </dt>
+                <dd className="mt-2 text-sm font-medium text-foreground">
+                  {currentUser.user.name}
+                </dd>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-4 ring-1 ring-foreground/10">
+                <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Email
+                </dt>
+                <dd className="mt-2 text-sm font-medium text-foreground">
+                  {currentUser.user.email}
+                </dd>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-4 ring-1 ring-foreground/10">
+                <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Verified
+                </dt>
+                <dd className="mt-2 text-sm font-medium text-foreground">
+                  {currentUser.user.emailVerified ? "Yes" : "No"}
+                </dd>
+              </div>
+              <div className="rounded-lg bg-muted/50 p-4 ring-1 ring-foreground/10">
+                <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+                  Session expires
+                </dt>
+                <dd className="mt-2 text-sm font-medium text-foreground">
+                  {new Date(currentUser.session.expiresAt).toLocaleString()}
+                </dd>
+              </div>
+            </dl>
+          </CardContent>
+          <CardFooter className="border-t">
+            <SignOutButton apiBaseUrl={getApiBaseUrl()} />
+          </CardFooter>
+        </Card>
+      </div>
     </main>
   );
 }

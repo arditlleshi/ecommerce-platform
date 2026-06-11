@@ -1,30 +1,48 @@
 import { NewsletterSignupsPreview } from "@/components/newsletter-signups-preview";
 import { getNewsletterSignups } from "@/lib/server/newsletter/client";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui/components/card";
 
 function NewsletterSignupsUnavailable() {
   return (
-    <div className="rounded-2xl border border-border/70 bg-background p-5">
-      <h2 className="text-sm font-semibold tracking-wide text-foreground">
-        Recent signups
-      </h2>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        The server-side read is wired up, but the homepage could not reach the
-        API right now. Start the backend to populate this panel.
-      </p>
-    </div>
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle className="text-base">Recent signups</CardTitle>
+        <CardDescription>
+          The server-side read is wired up, but the homepage could not reach the
+          API right now.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm leading-6 text-muted-foreground">
+          Start the backend to populate this panel with live newsletter
+          subscriptions.
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 
 export function RecentNewsletterSignupsLoading() {
   return (
-    <div className="rounded-2xl border border-border/70 bg-background p-5">
-      <h2 className="text-sm font-semibold tracking-wide text-foreground">
-        Recent signups
-      </h2>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        Loading the latest newsletter signups from the backend.
-      </p>
-    </div>
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle className="text-base">Recent signups</CardTitle>
+        <CardDescription>
+          Loading the latest newsletter signups from the backend.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm leading-6 text-muted-foreground">
+          The panel is waiting for the server read to complete.
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 

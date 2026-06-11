@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { GoogleIcon } from "@/components/icons/google-icon";
-import { Button } from "@repo/ui/button";
+import { Button } from "@repo/ui/components/button";
+import { useState, useTransition } from "react";
 
 type GoogleSignInButtonProps = {
   apiBaseUrl: string;
@@ -63,11 +63,12 @@ export function GoogleSignInButton({
         type="button"
         variant="outline"
         size="lg"
-        className="min-h-14 w-full justify-center gap-3 rounded-2xl border-zinc-200 bg-white text-zinc-950 shadow-[0_1px_0_rgba(24,24,27,0.04),0_18px_45px_rgba(24,24,27,0.05)] transition-[transform,box-shadow,border-color,background-color] duration-300 hover:-translate-y-px hover:border-zinc-300 hover:bg-white hover:shadow-[0_1px_0_rgba(24,24,27,0.05),0_22px_55px_rgba(24,24,27,0.08)] focus-visible:border-zinc-950/15 focus-visible:ring-zinc-950/10 active:translate-y-0 touch-manipulation disabled:border-zinc-200 disabled:bg-zinc-50 disabled:text-zinc-400"
+        className="h-10 w-full justify-center"
         onClick={signIn}
-        disabled={!enabled || isPending}>
-        <GoogleIcon className="size-4.5" data-icon="inline-start" />
-        {isPending ? "Redirecting…" : "Continue with Google"}
+        disabled={!enabled || isPending}
+      >
+        <GoogleIcon data-icon="inline-start" />
+        {isPending ? "Redirecting..." : "Continue with Google"}
       </Button>
       {!enabled ? (
         <p className="text-sm text-muted-foreground">
