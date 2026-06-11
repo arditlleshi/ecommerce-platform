@@ -78,6 +78,9 @@ export async function getNewsletterSignups(
   const query = newsletterSignupListQuerySchema.parse(input);
   const response = await fetch(
     getApiUrl(`/newsletter-signups?${toQueryString(query)}`),
+    {
+      cache: "no-store",
+    },
   );
   const responseBody = await parseJson(response);
 

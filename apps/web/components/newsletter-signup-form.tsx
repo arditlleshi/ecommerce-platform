@@ -13,8 +13,9 @@ import {
   FieldLabel,
 } from "@repo/ui/components/field";
 import { Input } from "@repo/ui/components/input";
-import { ToggleGroup, ToggleGroupItem } from "@repo/ui/components/toggle-group";
 import { Button } from "@repo/ui/components/button";
+import { Spinner } from "@repo/ui/components/spinner";
+import { ToggleGroup, ToggleGroupItem } from "@repo/ui/components/toggle-group";
 import { useActionState, useEffect, useRef, useState } from "react";
 
 type Interest = "storefront" | "admin" | "both";
@@ -39,7 +40,12 @@ export function NewsletterSignupForm() {
   }, [currentActionState.status]);
 
   return (
-    <form ref={formRef} className="flex flex-col gap-5" action={formAction}>
+    <form
+      ref={formRef}
+      className="flex flex-col gap-5"
+      action={formAction}
+      method="post"
+    >
       <FieldGroup>
         <Field data-invalid={Boolean(currentActionState.fieldErrors.name?.[0])}>
           <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -115,7 +121,8 @@ export function NewsletterSignupForm() {
       </FieldGroup>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Button type="submit" disabled={isPending} className="h-10 px-4">
+        <Button type="submit" size="lg" disabled={isPending}>
+          {isPending ? <Spinner data-icon="inline-start" /> : null}
           {isPending ? "Submitting..." : "Join the list"}
         </Button>
         {currentActionState.message ? (

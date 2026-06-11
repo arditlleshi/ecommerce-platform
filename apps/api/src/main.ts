@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import {
   json,
@@ -11,9 +12,15 @@ import { AppModule } from './app.module';
 import { AuthService } from './auth/auth.service';
 import { allowedWebOrigins, env } from './config/env';
 
+const logger = new Logger('Bootstrap');
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
+    logger:
+      env.NODE_ENV === 'production'
+        ? ['error', 'warn', 'log']
+        : ['error', 'warn', 'log', 'debug', 'verbose'],
   });
   app.enableShutdownHooks();
   app.enableCors({
@@ -37,5 +44,13 @@ async function bootstrap() {
   );
 
   await app.listen(env.PORT);
+  logger.log(`API listening on http://localhost:${env.PORT}`);
 }
-void bootstrap();
+
+void bootstrap().catch((error: unknown) => {
+  logger.error(
+    'Failed to start the API application.',
+    error instanceof Error ? error.stack : undefined,
+  );
+  process.exitCode = 1;
+});

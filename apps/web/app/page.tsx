@@ -3,6 +3,7 @@ import {
   RecentNewsletterSignups,
   RecentNewsletterSignupsLoading,
 } from "@/components/recent-newsletter-signups";
+import { siteConfig } from "@/lib/site";
 import { getCurrentUser } from "@/lib/server/current-user";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -12,23 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Ecommerce Platform",
-  description:
-    "A shadcn-first storefront shell with auth-aware entry, newsletter capture, and account flow.",
+  title: "Home",
+  description: siteConfig.description,
 };
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  themeColor: "#ffffff",
-};
-
-export const dynamic = "force-dynamic";
 
 const highlights = [
   {
@@ -86,10 +78,10 @@ export default async function Home() {
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
               <div className="flex flex-wrap gap-3">
-                <Button asChild className="h-10 px-4">
+                <Button asChild size="lg">
                   <Link href={primaryHref}>{primaryLabel}</Link>
                 </Button>
-                <Button asChild variant="outline" className="h-10 px-4">
+                <Button asChild variant="outline" size="lg">
                   <Link href="#newsletter">Newsletter</Link>
                 </Button>
               </div>

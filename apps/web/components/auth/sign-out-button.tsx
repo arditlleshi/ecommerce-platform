@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@repo/ui/components/button";
+import { Spinner } from "@repo/ui/components/spinner";
 import { useState, useTransition } from "react";
 
 type SignOutButtonProps = {
@@ -49,10 +50,13 @@ export function SignOutButton({ apiBaseUrl }: SignOutButtonProps) {
           onClick={signOut}
           disabled={isPending}
         >
+          {isPending ? <Spinner data-icon="inline-start" /> : null}
           {isPending ? "Signing out..." : "Sign out"}
         </Button>
         {errorMessage ? (
-          <p className="text-sm text-destructive">{errorMessage}</p>
+          <p aria-live="polite" className="text-sm text-destructive">
+            {errorMessage}
+          </p>
         ) : null}
       </div>
     </div>

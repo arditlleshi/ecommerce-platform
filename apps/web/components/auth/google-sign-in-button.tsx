@@ -2,6 +2,7 @@
 
 import { GoogleIcon } from "@/components/icons/google-icon";
 import { Button } from "@repo/ui/components/button";
+import { Spinner } from "@repo/ui/components/spinner";
 import { useState, useTransition } from "react";
 
 type GoogleSignInButtonProps = {
@@ -63,11 +64,15 @@ export function GoogleSignInButton({
         type="button"
         variant="outline"
         size="lg"
-        className="h-10 w-full justify-center"
+        className="w-full justify-center"
         onClick={signIn}
         disabled={!enabled || isPending}
       >
-        <GoogleIcon data-icon="inline-start" />
+        {isPending ? (
+          <Spinner data-icon="inline-start" />
+        ) : (
+          <GoogleIcon data-icon="inline-start" />
+        )}
         {isPending ? "Redirecting..." : "Continue with Google"}
       </Button>
       {!enabled ? (

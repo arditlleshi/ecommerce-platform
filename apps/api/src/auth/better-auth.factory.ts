@@ -54,5 +54,5 @@ export async function createBetterAuth(
           google: googleAuthConfig,
         }
       : undefined,
-  }) as BetterAuthInstance;
+  });
 }

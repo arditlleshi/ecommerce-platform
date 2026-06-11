@@ -1,21 +1,45 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import type { Viewport } from "next";
+import { Geist } from "next/font/google";
+import { getSiteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-geist",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Ecommerce Platform",
-  description:
-    "Storefront built with Next.js, Turbopack, and a shared UI package.",
+  metadataBase: siteUrl,
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    siteName: siteConfig.name,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.name,
+    description: siteConfig.description,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({
@@ -24,10 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${geistMono.variable} h-full font-sans antialiased`}
-    >
+    <html lang="en" className={`${geist.variable} h-full font-sans antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

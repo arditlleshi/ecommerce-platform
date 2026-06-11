@@ -15,11 +15,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Login | Ecommerce Platform",
+  title: "Login",
   description: "Sign in or create an account with Google.",
 };
-
-export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
   const [currentUser, authStatus] = await Promise.all([
@@ -55,7 +53,7 @@ export default async function LoginPage() {
             />
           </CardContent>
 
-          <CardFooter className="border-t">
+          <CardFooter>
             <p className="text-sm leading-6 text-muted-foreground">
               One provider handles both sign-in and sign-up, so there is no
               separate onboarding branch to maintain.

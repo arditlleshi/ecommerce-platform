@@ -10,16 +10,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Account",
+  description: "Review your current session and manage sign-out.",
+};
+
+const sessionDateFormatter = new Intl.DateTimeFormat("en", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
 
 export default async function AccountPage() {
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
-    redirect("/");
+    redirect("/login");
   }
 
   return (
@@ -77,12 +86,14 @@ export default async function AccountPage() {
                   Session expires
                 </dt>
                 <dd className="mt-2 text-sm font-medium text-foreground">
-                  {new Date(currentUser.session.expiresAt).toLocaleString()}
+                  {sessionDateFormatter.format(
+                    new Date(currentUser.session.expiresAt),
+                  )}
                 </dd>
               </div>
             </dl>
           </CardContent>
-          <CardFooter className="border-t">
+          <CardFooter>
             <SignOutButton apiBaseUrl={getApiBaseUrl()} />
           </CardFooter>
         </Card>

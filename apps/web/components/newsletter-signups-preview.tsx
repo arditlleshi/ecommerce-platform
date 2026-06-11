@@ -1,3 +1,4 @@
+import { Badge } from "@repo/ui/components/badge";
 import { type NewsletterSignupRecord } from "@repo/schemas/newsletter";
 import {
   Card,
@@ -42,9 +43,9 @@ export function NewsletterSignupsPreview({
           helper.
         </CardDescription>
         <CardAction>
-          <div className="rounded-lg bg-muted/50 px-2.5 py-1 text-xs font-medium">
+          <Badge variant="secondary">
             {total} total
-          </div>
+          </Badge>
         </CardAction>
       </CardHeader>
 
