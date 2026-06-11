@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tags": ["shared", "runtime"],
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**"]
+    }
+  }
+}

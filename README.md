@@ -28,10 +28,18 @@ copy .env.example .env
 docker compose up -d postgres
 bun run db:migrate
 bun run dev
+bun run test:e2e
+bun run boundaries
+bun run check
 bun run build
 bun run lint
 bun run check-types
 ```
+
+`bun run dev` starts the web app, the API, and the shared schema watcher as one
+Turbo-managed development graph. If you only need the storefront, run
+`bunx turbo run dev --filter=web` and Turbo will bring up the API dependency
+chain for that app as well.
 
 If `5432` is already in use on a machine, change both `POSTGRES_PORT` and
 `DATABASE_URL` in `.env` to the same alternate port before starting Docker.
@@ -47,6 +55,14 @@ By default:
 This repository is now structured to behave as one Turborepo monorepo:
 
 - the nested Git repository under `apps/api` has been removed from the working tree
-- the API app now participates in root `dev` and `check-types`
-- the build cache configuration includes NestJS `dist` output
+- the root pipeline caches build outputs per package and tracks the shared environment inputs from the repository root
+- package boundaries are enforced so apps can depend on shared packages and config packages without reaching into one another
+- the web app uses the shared TypeScript and ESLint packages instead of carrying its own duplicate setup
+- the development flow starts the shared schema watcher alongside the application servers
 - the API owns the Drizzle and PostgreSQL runtime, while the frontend stays database-agnostic
+
+## CI
+
+GitHub Actions runs Turbo in affected mode with a full git history checkout, so
+pull requests only re-run the packages touched by the change plus anything that
+depends on them.

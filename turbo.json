@@ -1,19 +1,84 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "globalDependencies": [".env", ".env.*", ".env.example"],
+  "globalEnv": ["CI", "NODE_ENV"],
+  "boundaries": {
+    "tags": {
+      "app": {
+        "dependencies": {
+          "allow": ["shared", "config"]
+        },
+        "dependents": {
+          "deny": ["app", "shared", "config"]
+        }
+      },
+      "shared": {
+        "dependencies": {
+          "allow": ["shared", "config"]
+        },
+        "dependents": {
+          "allow": ["app", "shared"]
+        }
+      },
+      "config": {
+        "dependencies": {
+          "allow": ["config"]
+        },
+        "dependents": {
+          "allow": ["app", "shared", "config"]
+        }
+      }
+    }
+  },
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**", "dist/**"]
+      "inputs": ["$TURBO_DEFAULT$"],
+      "env": [
+        "API_URL",
+        "AUTH_COOKIE_DOMAIN",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "DATABASE_POOL_MAX",
+        "DATABASE_SSL",
+        "DATABASE_URL",
+        "FRONTEND_APP_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "NEXT_PUBLIC_APP_URL",
+        "PORT",
+        "WEB_ORIGIN"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "outputs": []
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types"],
+      "outputs": []
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "env": [
+        "API_URL",
+        "AUTH_COOKIE_DOMAIN",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "DATABASE_POOL_MAX",
+        "DATABASE_SSL",
+        "DATABASE_URL",
+        "FRONTEND_APP_URL",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "PORT",
+        "WEB_ORIGIN"
+      ]
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     }

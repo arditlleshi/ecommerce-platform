@@ -37,6 +37,10 @@ export class NewsletterSignupsRepository {
       })
       .returning();
 
+    if (!signup) {
+      throw new Error('Newsletter signup upsert did not return a row.');
+    }
+
     return signup;
   }
 

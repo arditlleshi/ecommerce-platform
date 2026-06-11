@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tags": ["app", "web"],
+  "tasks": {
+    "build": {
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"]
+    },
+    "dev": {
+      "with": ["@ecommerce/api#dev"]
+    }
+  }
+}

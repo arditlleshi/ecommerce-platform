@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tags": ["app", "api"],
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "with": ["@repo/schemas#dev"]
+    }
+  }
+}
